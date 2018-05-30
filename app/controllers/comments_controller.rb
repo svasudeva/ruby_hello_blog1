@@ -3,6 +3,8 @@ class CommentsController < ApplicationController
 
   def create
     @comment = @post.comments.create! comments_params
+    CommentsMailer.submitted(@comment).deliver_later
+    CommentsChannel.broadcast(@comment)
     respond_to do |format|
       format.html { redirect_to @post, notice: 'Comment Post was successfully created.' } if @comment.save
     end
